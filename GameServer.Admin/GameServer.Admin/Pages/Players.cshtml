@@ -1,0 +1,80 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@functions {
+    public class InlinePlayersModel : PageModel
+    {
+        public void OnGet()
+        {
+        }
+    }
+}
+@model InlinePlayersModel
+@{
+    ViewData["Title"] = "Správa hráčů";
+}
+
+<div class="container mt-4">
+    <div class="mb-4">
+        <h1 class="fw-bold">👥 Seznam a správa hráčů</h1>
+        <p class="text-muted">Přehled aktuálně připojených uživatelů a správa banů</p>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body bg-light rounded">
+            <form class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="Hledat hráče podle nickname...">
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select">
+                        <option value="all">Všichni hráči</option>
+                        <option value="online">Pouze Online</option>
+                        <option value="banned">Pouze Zablokovaní (Banned)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary w-100">🔍 Filtrovat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 80px;">Status</th>
+                        <th>Nickname</th>
+                        <th>Level</th>
+                        <th>Odezva (Ping)</th>
+                        <th>Naposledy spatřen</th>
+                        <th class="text-end">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge bg-success">Online</span></td>
+                        <td class="fw-bold">pistour</td>
+                        <td>42</td>
+                        <td><span class="text-success fw-bold">24 ms</span></td>
+                        <td>Nyní na serveru</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-danger">Zablokovat</button>
+                        </td>
+                    </tr>
+                    <tr class="table-danger">
+                        <td><span class="badge bg-danger">Banned</span></td>
+                        <td class="text-decoration-line-through">GrieferX</td>
+                        <td>12</td>
+                        <td class="text-muted">--</td>
+                        <td>18.05.2026 14:20</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-success">Zrušit ban</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

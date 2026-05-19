@@ -2,6 +2,6 @@
 
 public class GameServerApiOptions
 {
-    public string BaseUrl { get; set; } = string.Empty;
-    public string ApiKey { get; set; } = string.Empty;
+    public string BaseUrl { get; set; } = null!;
+    public string ApiKey { get; set; } = null!;
 }

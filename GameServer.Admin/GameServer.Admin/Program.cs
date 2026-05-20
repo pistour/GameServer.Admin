@@ -1,7 +1,17 @@
+using GameServer.Admin.Options;
+using GameServer.Admin.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+// Registrace konfigurace (Options pattern)
+builder.Services.Configure<GameServerApiOptions>(
+    builder.Configuration.GetSection("GameServerApi"));
+
+// Registrace API klienta
+builder.Services.AddHttpClient<IGameServerApiClient, GameServerApiClient>();
 
 var app = builder.Build();
 

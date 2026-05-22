@@ -1,14 +1,5 @@
 ﻿@page
-@using Microsoft.AspNetCore.Mvc.RazorPages
-@functions {
-    public class InlinePlayersModel : PageModel
-    {
-        public void OnGet()
-        {
-        }
-    }
-}
-@model InlinePlayersModel
+@model PlayersModel
 @{
     ViewData["Title"] = "Správa hráčů";
 }
@@ -19,62 +10,93 @@
         <p class="text-muted">Přehled aktuálně připojených uživatelů a správa banů</p>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body bg-light rounded">
-            <form class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="Hledat hráče podle nickname...">
-                </div>
-                <div class="col-md-4">
-                    <select class="form-select">
-                        <option value="all">Všichni hráči</option>
-                        <option value="online">Pouze Online</option>
-                        <option value="banned">Pouze Zablokovaní (Banned)</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-primary w-100">🔍 Filtrovat</button>
-                </div>
-            </form>
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger shadow-sm d-flex align-items-center mb-4" role="alert">
+            <span class="fs-4 me-3">⚠️</span>
+            <div>
+                <strong>Chyba komunikace:</strong> @Model.ErrorMessage
+            </div>
         </div>
-    </div>
+    }
+    else if (Model.Players != null && Model.Players.Count == 0)
+    {
+        <div class="alert alert-info shadow-sm d-flex align-items-center mb-4" role="alert">
+            <span class="fs-4 me-3">ℹ️</span>
+            <div>
+                Aktuálně nejsou na serveru žádní hráči.
+            </div>
+        </div>
+    }
 
-    <div class="card border-0 shadow-sm">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th style="width: 80px;">Status</th>
-                        <th>Nickname</th>
-                        <th>Level</th>
-                        <th>Odezva (Ping)</th>
-                        <th>Naposledy spatřen</th>
-                        <th class="text-end">Akce</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="badge bg-success">Online</span></td>
-                        <td class="fw-bold">pistour</td>
-                        <td>42</td>
-                        <td><span class="text-success fw-bold">24 ms</span></td>
-                        <td>Nyní na serveru</td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-outline-danger">Zablokovat</button>
-                        </td>
-                    </tr>
-                    <tr class="table-danger">
-                        <td><span class="badge bg-danger">Banned</span></td>
-                        <td class="text-decoration-line-through">GrieferX</td>
-                        <td>12</td>
-                        <td class="text-muted">--</td>
-                        <td>18.05.2026 14:20</td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-success">Zrušit ban</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    @if (Model.Players != null && Model.Players.Count > 0)
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 100px;">Status</th>
+                            <th>Nickname</th>
+                            <th>Level</th>
+                            <th>Odezva (Ping)</th>
+                            <th>Naposledy spatřen</th>
+                            <th class="text-end">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var player in Model.Players)
+                        {
+                            <tr class="@(player.IsBanned ? "table-danger" : "")">
+                                <td>
+                                    @if (player.IsBanned)
+                                    {
+                                        <span class="badge bg-danger">Banned</span>
+                                    }
+                                    else if (player.IsOnline)
+                                    {
+                                        <span class="badge bg-success">Online</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Offline</span>
+                                    }
+                                </td>
+
+                                <td class="@(player.IsBanned ? "text-decoration-line-through text-muted" : "fw-bold")">
+                                    @player.Nickname
+                                </td>
+
+                                <td>@player.Level</td>
+
+                                <td>
+                                    @if (player.IsOnline && !player.IsBanned)
+                                    {
+                                        <span class="text-success fw-bold">@player.PingMs ms</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">--</span>
+                                    }
+                                </td>
+
+                                <td>@(player.LastSeenAt?.ToString("g") ?? "Neznámý")</td>
+
+                                <td class="text-end">
+                                    @if (player.IsBanned)
+                                    {
+                                        <button class="btn btn-sm btn-success">Zrušit ban</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-danger">Zablokovat</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    }
 </div>

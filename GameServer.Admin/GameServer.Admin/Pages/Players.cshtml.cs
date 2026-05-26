@@ -1,4 +1,4 @@
-﻿using GameServer.Admin.Dtos;
+using GameServer.Admin.Dtos;
 using GameServer.Admin.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,6 @@ public class PlayersModel : PageModel
 
     public async Task OnGetAsync()
     {
-        // 1. Stažení VŠECH hráčů z API
         Players = await _apiClient.GetPlayersAsync();
 
         if (Players == null)
@@ -34,7 +33,6 @@ public class PlayersModel : PageModel
             return;
         }
 
-        // 2. FILTROVÁNÍ: Podle vyhledávacího pole (Nickname)
         if (!string.IsNullOrWhiteSpace(SearchQuery))
         {
             Players = Players
@@ -42,7 +40,6 @@ public class PlayersModel : PageModel
                 .ToList();
         }
 
-        // 3. FILTROVÁNÍ: Podle vybraného stavu z roletky
         if (!string.IsNullOrEmpty(StatusFilter) && StatusFilter != "all")
         {
             if (StatusFilter == "online")

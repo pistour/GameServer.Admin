@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model PlayersModel
 @{
     ViewData["Title"] = "Správa hráčů";
@@ -7,7 +7,7 @@
 <div class="container mt-4">
     <div class="mb-4">
         <h1 class="fw-bold">👥 Seznam a správa hráčů</h1>
-        <p class="text-muted">Přehled aktuálně připojených uživatelů a správa banů</p>
+        <p class="text-muted">Přehled aktuálně připojených uživatelů, filtrování a správa banů</p>
     </div>
 
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
@@ -19,12 +19,37 @@
             </div>
         </div>
     }
-    else if (Model.Players != null && Model.Players.Count == 0)
+
+    <div class="card border-0 shadow-sm mb-4 bg-light">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label asp-for="SearchQuery" class="form-label fw-bold">Hledat podle přezdívky:</label>
+                    <input asp-for="SearchQuery" class="form-control" placeholder="Zadejte nickname..." />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="StatusFilter" class="form-label fw-bold">Stav hráče:</label>
+                    <select asp-for="StatusFilter" class="form-select">
+                        <option value="all">Všichni hráči</option>
+                        <option value="online">🟢 Jen Online</option>
+                        <option value="offline">⚪ Jen Offline</option>
+                        <option value="banned">🔴 Zabanovaní</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100 mb-2">🔍 Hledat a filtrovat</button>
+                    <a asp-page="/Players" class="btn btn-outline-secondary w-100">✖ Zrušit filtry</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Players != null && Model.Players.Count == 0)
     {
-        <div class="alert alert-info shadow-sm d-flex align-items-center mb-4" role="alert">
-            <span class="fs-4 me-3">ℹ️</span>
+        <div class="alert alert-warning shadow-sm d-flex align-items-center mb-4" role="alert">
+            <span class="fs-4 me-3">🔍</span>
             <div>
-                Aktuálně nejsou na serveru žádní hráči.
+                <strong>Žádné výsledky!</strong> Tomuto filtru nebo hledání neodpovídá žádný hráč.
             </div>
         </div>
     }
@@ -62,13 +87,13 @@
                                         <span class="badge bg-secondary">Offline</span>
                                     }
                                 </td>
-
+                                
                                 <td class="@(player.IsBanned ? "text-decoration-line-through text-muted" : "fw-bold")">
                                     @player.Nickname
                                 </td>
-
+                                
                                 <td>@player.Level</td>
-
+                                
                                 <td>
                                     @if (player.IsOnline && !player.IsBanned)
                                     {
@@ -79,9 +104,9 @@
                                         <span class="text-muted">--</span>
                                     }
                                 </td>
-
+                                
                                 <td>@(player.LastSeenAt?.ToString("g") ?? "Neznámý")</td>
-
+                                
                                 <td class="text-end">
                                     @if (player.IsBanned)
                                     {

@@ -25,36 +25,35 @@ public class PlayersModel : PageModel
 
     public async Task OnGetAsync()
     {
-        try
+        Players = await _apiClient.GetPlayersAsync();
+
+        if (Players == null)
         {
-            Players = await _apiClient.GetPlayersAsync();
-
-            if (Players == null)
-            {
-                ErrorMessage = "Server nevrátil žádná data.";
-                return;
-            }
-
-            // Filtrace z předchozího dne
-            if (!string.IsNullOrWhiteSpace(SearchQuery))
-            {
-                Players = Players.Where(p => p.Nickname.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(StatusFilter) && StatusFilter != "all")
-            {
-                if (StatusFilter == "online") Players = Players.Where(p => p.IsOnline && !p.IsBanned).ToList();
-                else if (StatusFilter == "offline") Players = Players.Where(p => !p.IsOnline && !p.IsBanned).ToList();
-                else if (StatusFilter == "banned") Players = Players.Where(p => p.IsBanned).ToList();
-            }
+            ErrorMessage = "Nepodařilo se načíst seznam hráčů. API neodpovídá.";
+            return;
         }
-        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+
+        if (!string.IsNullOrWhiteSpace(SearchQuery))
         {
-            ErrorMessage = "⛔ Špatný API klíč! Zkontrolujte konfiguraci.";
+            Players = Players
+                .Where(p => p.Nickname.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
-        catch (Exception)
+
+        if (!string.IsNullOrEmpty(StatusFilter) && StatusFilter != "all")
         {
-            ErrorMessage = "🔌 API je momentálně nedostupné. Zkuste to prosím později.";
+            if (StatusFilter == "online")
+            {
+                Players = Players.Where(p => p.IsOnline && !p.IsBanned).ToList();
+            }
+            else if (StatusFilter == "offline")
+            {
+                Players = Players.Where(p => !p.IsOnline && !p.IsBanned).ToList();
+            }
+            else if (StatusFilter == "banned")
+            {
+                Players = Players.Where(p => p.IsBanned).ToList();
+            }
         }
     }
 }

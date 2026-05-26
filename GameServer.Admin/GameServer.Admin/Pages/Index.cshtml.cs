@@ -28,11 +28,11 @@ public class IndexModel : PageModel
         }
         catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            ErrorMessage = "⛔ Špatný API klíč! Přístup byl odepřen.";
+            ErrorMessage = "Špatný API klíč! Přístup byl odepřen.";
         }
         catch (Exception)
         {
-            ErrorMessage = "🔌 API je nedostupné. Zkontrolujte připojení k serveru.";
+            ErrorMessage = "API je nedostupné. Zkontrolujte připojení k serveru.";
         }
     }
 }

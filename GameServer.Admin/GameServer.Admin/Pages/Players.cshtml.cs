@@ -1,4 +1,4 @@
-﻿using GameServer.Admin.Dtos;
+using GameServer.Admin.Dtos;
 using GameServer.Admin.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;

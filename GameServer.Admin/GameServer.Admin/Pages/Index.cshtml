@@ -38,9 +38,10 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-header bg-primary text-white fw-bold">🎮 Informace o hře</div>
                 <div class="card-body">
-                    <p class="card-text"><strong>Název:</strong> @(Model.Status?.ServerName ?? "Načítání...")</p>
-                    <p class="card-text"><strong>Verze:</strong> 1.20.4</p>
-                    <p class="card-text"><strong>Aktuální mapa:</strong> Survival_World_2026</p>
+                    <p class="card-text"><strong>Název serveru:</strong> @(Model.Status?.ServerName ?? "Načítání...")</p>
+                    <p class="card-text"><strong>Hra:</strong> @(Model.Status?.GameName ?? "Načítání...")</p>
+                    <p class="card-text"><strong>Verze:</strong> @(Model.Status?.Version ?? "Načítání...")</p>
+                    <p class="card-text"><strong>Aktuální mapa:</strong> @(Model.Status?.MapName ?? "Načítání...")</p>
                 </div>
             </div>
         </div>
@@ -72,7 +73,7 @@
                 <div class="card-header bg-dark text-white fw-bold">📜 Zpráva dne (MOTD)</div>
                 <div class="card-body">
                     <div class="p-3 bg-light rounded font-monospace border">
-                        Welcome to our practicing server! No griefing allowed. Enjoy!
+                        @(Model.Status?.Motd ?? "Načítání zprávy dne...")
                     </div>
                 </div>
             </div>
@@ -80,6 +81,6 @@
     </div>
 
     <div class="text-end mt-4 text-muted small">
-        <p>Poslední aktualizace: @DateTime.Now.ToString("g")</p>
+        <p>Poslední aktualizace dat: @(Model.Status?.GeneratedAt.ToString("g") ?? "Neznámý čas")</p>
     </div>
 </div>

@@ -8,7 +8,6 @@ public class IndexModel : PageModel
 {
     private readonly IGameServerApiClient _apiClient;
 
-    // Vlastnosti přístupné pro HTML šablonu
     public ServerStatusDto? Status { get; set; }
     public string? ErrorMessage { get; set; }
 
@@ -19,13 +18,21 @@ public class IndexModel : PageModel
 
     public async Task OnGetAsync()
     {
-        // Stažení dat z API
-        Status = await _apiClient.GetServerStatusAsync();
-
-        // Pokud se stahování nepovedlo (vrátilo null), naplníme chybovou zprávu
-        if (Status == null)
+        try
         {
-            ErrorMessage = "Nepodařilo se připojit k API herního serveru. Zkontrolujte připojení a API klíč.";
+            Status = await _apiClient.GetServerStatusAsync();
+            if (Status == null)
+            {
+                ErrorMessage = "Server nevrátil žádná data.";
+            }
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            ErrorMessage = "⛔ Špatný API klíč! Přístup byl odepřen.";
+        }
+        catch (Exception)
+        {
+            ErrorMessage = "🔌 API je nedostupné. Zkontrolujte připojení k serveru.";
         }
     }
 }

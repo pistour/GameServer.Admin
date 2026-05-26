@@ -25,35 +25,36 @@ public class PlayersModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Players = await _apiClient.GetPlayersAsync();
-
-        if (Players == null)
+        try
         {
-            ErrorMessage = "Nepodařilo se načíst seznam hráčů. API neodpovídá.";
-            return;
+            Players = await _apiClient.GetPlayersAsync();
+
+            if (Players == null)
+            {
+                ErrorMessage = "Server nevrátil žádná data.";
+                return;
+            }
+
+            // Filtrace z předchozího dne
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                Players = Players.Where(p => p.Nickname.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(StatusFilter) && StatusFilter != "all")
+            {
+                if (StatusFilter == "online") Players = Players.Where(p => p.IsOnline && !p.IsBanned).ToList();
+                else if (StatusFilter == "offline") Players = Players.Where(p => !p.IsOnline && !p.IsBanned).ToList();
+                else if (StatusFilter == "banned") Players = Players.Where(p => p.IsBanned).ToList();
+            }
         }
-
-        if (!string.IsNullOrWhiteSpace(SearchQuery))
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            Players = Players
-                .Where(p => p.Nickname.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            ErrorMessage = "⛔ Špatný API klíč! Zkontrolujte konfiguraci.";
         }
-
-        if (!string.IsNullOrEmpty(StatusFilter) && StatusFilter != "all")
+        catch (Exception)
         {
-            if (StatusFilter == "online")
-            {
-                Players = Players.Where(p => p.IsOnline && !p.IsBanned).ToList();
-            }
-            else if (StatusFilter == "offline")
-            {
-                Players = Players.Where(p => !p.IsOnline && !p.IsBanned).ToList();
-            }
-            else if (StatusFilter == "banned")
-            {
-                Players = Players.Where(p => p.IsBanned).ToList();
-            }
+            ErrorMessage = "🔌 API je momentálně nedostupné. Zkuste to prosím později.";
         }
     }
 }

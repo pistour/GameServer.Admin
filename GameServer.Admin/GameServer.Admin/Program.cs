@@ -1,7 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using GameServer.Admin.Data;
 using GameServer.Admin.Options;
 using GameServer.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Zapojení naší SQLite databáze
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=adminlogs.db"));
 
 // Add services to the container.
 builder.Services.AddRazorPages();

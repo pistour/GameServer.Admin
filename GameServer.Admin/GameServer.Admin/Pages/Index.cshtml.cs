@@ -1,31 +1,34 @@
 using GameServer.Admin.Dtos;
 using GameServer.Admin.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+// 1. Tady jsou ty dva nové odkazy na naši databázi:
+using GameServer.Admin.Data;
+using GameServer.Admin.Models;
 
 namespace GameServer.Admin.Pages;
 
 public class IndexModel : PageModel
 {
     private readonly IGameServerApiClient _apiClient;
+    // 2. Tady si připravíme místo pro náš databázový mozek:
+    private readonly AppDbContext _dbContext;
 
-    // Vlastnosti přístupné pro HTML šablonu
     public ServerStatusDto? Status { get; set; }
     public string? ErrorMessage { get; set; }
 
-    public IndexModel(IGameServerApiClient apiClient)
+    // 3. Tady je ten upravený konstruktor (v závorce nově přijímá i AppDbContext):
+    public IndexModel(IGameServerApiClient apiClient, AppDbContext dbContext)
     {
         _apiClient = apiClient;
+        _dbContext = dbContext; // Uložení do paměti stránky
     }
 
     public async Task OnGetAsync()
     {
-        // Stažení dat z API
-        Status = await _apiClient.GetServerStatusAsync();
-
-        // Pokud se stahování nepovedlo (vrátilo null), naplníme chybovou zprávu
-        if (Status == null)
+        try
         {
-            ErrorMessage = "Nepodařilo se připojit k API herního serveru. Zkontrolujte připojení a API klíč.";
-        }
-    }
-}
+            // 4. A tady hned na začátku try bloku provedeme ten ZÁPIS do deníčku:
+            _dbContext.AdminLogs.Add(new AdminLog { ActionPath = "Dashboard (Index)" });
+            await _dbContext.SaveChangesAsync();
+
+            // ... (tady normálně pokračuje stahování Status = await _apiClient.GetServerStatusAsync(); atd.)

@@ -46,7 +46,7 @@ public class GameServerApiClient : IGameServerApiClient
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/server/players");
+            var response = await _httpClient.GetAsync("api/players");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<PlayerDto>>();
         }

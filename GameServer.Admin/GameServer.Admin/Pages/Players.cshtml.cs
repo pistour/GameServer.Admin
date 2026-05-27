@@ -1,4 +1,4 @@
-﻿using GameServer.Admin.Dtos;
+using GameServer.Admin.Dtos;
 using GameServer.Admin.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ namespace GameServer.Admin.Pages;
 public class PlayersModel : PageModel
 {
     private readonly IGameServerApiClient _apiClient;
-    private readonly AppDbContext _dbContext; // Databázový mozek
+    private readonly AppDbContext _dbContext;
 
     public List<PlayerDto>? Players { get; set; }
     public string? ErrorMessage { get; set; }
@@ -21,7 +21,6 @@ public class PlayersModel : PageModel
     [BindProperty(SupportsGet = true)]
     public string? StatusFilter { get; set; }
 
-    // Upravený konstruktor
     public PlayersModel(IGameServerApiClient apiClient, AppDbContext dbContext)
     {
         _apiClient = apiClient;
@@ -32,7 +31,7 @@ public class PlayersModel : PageModel
     {
         try
         {
-            // ZÁPIS DO DATABÁZE (Den 8)
+            // Zápis do databáze (Den 8)
             _dbContext.AdminLogs.Add(new AdminLog { ActionPath = "Players" });
             await _dbContext.SaveChangesAsync();
 
@@ -59,11 +58,11 @@ public class PlayersModel : PageModel
         }
         catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            ErrorMessage = " Špatný API klíč! Zkontrolujte konfiguraci.";
+            ErrorMessage = "Špatný API klíč! Zkontrolujte konfiguraci.";
         }
         catch (Exception)
         {
-            ErrorMessage = " API je momentálně nedostupné. Zkuste to prosím později.";
+            ErrorMessage = "API je momentálně nedostupné. Zkuste to prosím později.";
         }
     }
 }
